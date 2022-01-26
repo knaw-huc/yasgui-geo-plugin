@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@triply/yasgui": "^4.2.20"
+  }
+}

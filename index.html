@@ -1,0 +1,21 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="js/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/yasapp.css" />
+    <script src="js/leaflet/leaflet.js"></script>
+    <script src="js/wicket/wicket.js"></script>
+    <script src="js/wicket/wicket-leaflet.js"></script>
+    <link href="node_modules/@triply/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
+    <script src="node_modules/@triply/yasgui/build/yasgui.min.js"></script>
+    <script src="js/plugin.js"></script>
+    <title>Yasgui Geo Demo</title>
+</head>
+<body>
+<div id="yasgui"></div>
+<script>
+    Yasr.registerPlugin("HucGeo", Geo);
+    const yasgui = new Yasgui(document.getElementById("yasgui"), {"pluginOrder": ["response", "table", "Geo"], "defaultPlugin": "response"});
+</script>
+</body>
+</html>
