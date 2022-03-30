@@ -10,25 +10,100 @@ class Geo {
         this.yasr = yasr;
     }
 
-    // Draw the resultset. This plugin simply draws the string 'True' or 'False'
+    // Draw the resultset.
     draw() {
         const el = document.createElement("div");
         el.setAttribute("id", "map");
         el.setAttribute("class", "leaflet leaflet-container leaflet-touch leaflet-fade-anim leaflet-touch-zoom");
         this.yasr.resultsEl.appendChild(el);
-        var map = L.map('map').setView([52.370216, 4.895168], 14);
-        L.tileLayer('https://d.tile.openstreetmap.de/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        var open =  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png', {
+            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 18,
             id: 'mapgui',
             tileSize: 512,
             zoomOffset: -1,
-        }).addTo(map);
+        });
+        var bglayer = L.tileLayer('https://t{s}.data.amsterdam.nl/topo_wm/{z}/{x}/{y}.png', {
+            subdomains: '1234',
+            minZoom: 11,
+            maxZoom: 21,
+            attribution: 'Kaartgegevens: <a href="https://www.kadaster.nl/">Kadaster</a>, cartografie: <a href="https://www.webmapper.net/">Webmapper</a>'
+        });
+
+        var loman = new L.TileLayer('https://images.diginfra.net/webmapper/maps/loman/{z}/{x}/{y}.jpeg', {
+            attribution: 'Loman',
+            subdomains: '1234',
+            minZoom: 12,
+            maxZoom: 20,
+        });
+
+        var debroen = new L.TileLayer('https://images.diginfra.net/webmapper/maps/debroen/{z}/{x}/{y}.png', {
+            attribution: 'Gerred De Broen',
+            subdomains: '1234',
+            minZoom: 14,
+            maxZoom: 19,
+        });
+
+        var berckenrode = new L.TileLayer('https://images.diginfra.net/webmapper/maps/berckenrode/{z}/{x}/{y}.png', {
+            attribution: 'Berckenrode',
+            subdomains: '1234',
+            minZoom: 14,
+            maxZoom: 19,
+        });
+
+        var layer1909 = L.tileLayer('https://images.diginfra.net/webmapper/maps/pw-1909/{z}/{x}/{y}.png',{
+            minZoom: 12,
+            maxZoom: 21
+        });
+
+        var layer1985 = L.tileLayer('https://images.diginfra.net/webmapper/maps/pw-1985/{z}/{x}/{y}.png', {
+            minZoom: 12,
+            maxZoom: 21
+        });
+
+        var layer1943 = L.tileLayer('https://images.diginfra.net/webmapper/maps/pw-1943/{z}/{x}/{y}.png', {
+            minZoom: 12,
+            maxZoom: 21
+        });
+
+        var baseLayers = {
+            "A'dam": bglayer,
+        };
+
+        var overlays = {
+            "1625": berckenrode,
+            "1724" : debroen,
+            "1876" : loman,
+            "1909": layer1909,
+            "1943": layer1943,
+            "1985": layer1985
+        };
+
+        var map = L.map('map').setView([52.370216, 4.895168], 14, [open, loman]);
+        var baseLayers = {World: open};
+        L.control.layers(baseLayers, overlays).addTo(map);
+        map.addLayer(open);
         var wkt = new Wkt.Wkt();
         for (var key in this.yasr.results.json.results.bindings) {
             wkt.read(this.yasr.results.json.results.bindings[key].wkt.value);
             var feature = { "type": "Feature", 'properties': {"name": this.yasr.results.json.results.bindings[key].wktTooltip.value}, "geometry": wkt.toJson() };
-            L.geoJson(feature).bindTooltip(function (layer) {
+            L.geoJson(feature, {
+                style: function(feature) {
+                    return {
+                        color: "#a50026",
+                        radius:6,
+                        weight: 0,
+                        opacity: 0.6,
+                        fillOpacity: 0.6,
+                    };
+                },
+                pointToLayer: function(feature, latlng) {
+                    return new L.CircleMarker(latlng, {
+                        radius: 10,
+                        fillOpacity: 0.85
+                    });
+                }
+            }).bindTooltip(function (layer) {
                 return layer.feature.properties.name; }
             ).addTo(map);
         }
