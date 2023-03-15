@@ -6,12 +6,15 @@ class Publisher {
 
     constructor(yasr) {
         this.yasr = yasr;
+        this.mandatories = ["repo", "token", "query_name"];
     }
 
     // Draw the publication form.
     draw() {
         const form = document.createElement("div");
         form.setAttribute("class", "mdForm");
+        form.append(this.createRow(this.createLabel("Github repo:"), this.createValue("input", "repo", 60)));
+        form.append(this.createRow(this.createLabel("Github token:"), this.createValue("input", "token", 60)));
         form.append(this.createRow(this.createLabel("Query name:"), this.createValue("input", "query_name", 30)));
         form.append(this.createRow(this.createLabel("Summary:"), this.createValue("input", "summary", 60)));
         form.append(this.createRow(this.createLabel("Description:"), this.createValue("input", "description", 100)));
@@ -80,11 +83,20 @@ class Publisher {
                 break;
             case "input":
                 input.setAttribute("size", cols);
+                if (id === 'token') {
+                    input.setAttribute("type", "password");
+                }
                 break;
             default:
                 return cell;
         }
+
         cell.append(input);
+        if (this.mandatories.includes(id)) {
+            const man = document.createElement("span");
+            man.innerText = " *";
+            cell.append(man);
+        }
         return cell;
     }
 
