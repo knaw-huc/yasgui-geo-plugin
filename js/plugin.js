@@ -16,7 +16,7 @@ class Geo {
         el.setAttribute("id", "map");
         el.setAttribute("class", "leaflet leaflet-container leaflet-touch leaflet-fade-anim leaflet-touch-zoom");
         this.yasr.resultsEl.appendChild(el);
-        var open =  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png', {
+        var open =  L.tileLayer('https://d.tile.openstreetmap.de/{z}/{x}/{y}.png', {
             attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 18,
             id: 'mapgui',
@@ -86,6 +86,8 @@ class Geo {
         var wkt = new Wkt.Wkt();
         for (var key in this.yasr.results.json.results.bindings) {
             wkt.read(this.yasr.results.json.results.bindings[key].wkt.value);
+            var arr = this.yasr.results.json.results.bindings[key].wktColor.value;
+            var arc = arr.split(',');
             var feature = { "type": "Feature", 'properties': {"name": this.yasr.results.json.results.bindings[key].wktTooltip.value}, "geometry": wkt.toJson() };
             L.geoJson(feature, {
                 style: function(feature) {
@@ -93,8 +95,8 @@ class Geo {
                         color: "#a50026",
                         radius:6,
                         weight: 0,
-                        opacity: 0.6,
-                        fillOpacity: 0.6,
+                        opacity: arc[1].toString(),
+                        fillOpacity: arc[1].toString()
                     };
                 },
                 pointToLayer: function(feature, latlng) {
